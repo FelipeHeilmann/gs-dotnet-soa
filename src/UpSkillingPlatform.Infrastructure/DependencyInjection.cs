@@ -21,9 +21,11 @@ public static class DependencyInjection
 
         services.AddScoped<IUsuarioRepository, UsuarioRepository>();
         services.AddScoped<ITrilhaRepository, TrilhaRepository>();
+        services.AddScoped<IMatriculaRepository, MatriculaRepository>();
 
         services.AddScoped<UsuarioService>();
         services.AddScoped<TrilhaService>();
+        services.AddScoped<MatriculaService>();
 
         return services;
     }

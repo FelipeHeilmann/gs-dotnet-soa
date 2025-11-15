@@ -23,7 +23,7 @@ public class UsuarioService
     public async Task<UsuarioResponseDto> GetByIdAsync(long id)
     {
         var usuario = await _repository.GetByIdAsync(id);
-        if (usuario == null)
+        if (usuario is null)
         {
             throw new UsuarioNaoEncontradoException(id);
         }
@@ -53,7 +53,7 @@ public class UsuarioService
     public async Task<UsuarioResponseDto> UpdateAsync(long id, UsuarioUpdateDto dto)
     {
         var usuario = await _repository.GetByIdAsync(id);
-        if (usuario == null)
+        if (usuario is null)
         {
             throw new UsuarioNaoEncontradoException(id);
         }

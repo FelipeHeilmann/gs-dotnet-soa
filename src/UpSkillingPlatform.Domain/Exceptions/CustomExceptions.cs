@@ -27,3 +27,20 @@ public class ValidationException : Exception
 {
     public ValidationException(string message) : base(message) { }
 }
+
+public class MatriculaNaoEncontradaException : NotFoundException
+{
+    public MatriculaNaoEncontradaException(long id) 
+        : base($"Matrícula com ID {id} não foi encontrada.") { }
+}
+
+public class MatriculaJaExisteException : Exception
+{
+    public MatriculaJaExisteException(long usuarioId, long trilhaId) 
+        : base($"O usuário já possui uma matrícula ativa na trilha especificada.") { }
+}
+
+public class MatriculaInvalidaException : ValidationException
+{
+    public MatriculaInvalidaException(string message) : base(message) { }
+}

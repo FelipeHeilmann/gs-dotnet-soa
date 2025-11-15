@@ -23,7 +23,7 @@ public class TrilhaService
     public async Task<TrilhaResponseDto> GetByIdAsync(long id)
     {
         var trilha = await _repository.GetByIdAsync(id);
-        if (trilha == null)
+        if (trilha is null)
         {
             throw new TrilhaNaoEncontradaException(id);
         }
@@ -50,7 +50,7 @@ public class TrilhaService
     public async Task<TrilhaResponseDto> UpdateAsync(long id, TrilhaUpdateDto dto)
     {
         var trilha = await _repository.GetByIdAsync(id);
-        if (trilha == null)
+        if (trilha is null)
         {
             throw new TrilhaNaoEncontradaException(id);
         }

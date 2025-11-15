@@ -23,16 +23,23 @@
 
 ## 📋 Sobre o Projeto
 
-O **UpSkilling Platform** é uma API RESTful desenvolvida para gerenciar uma plataforma de qualificação e requalificação profissional, focada nas demandas do mercado de trabalho para 2030 e além. O sistema permite:
+O **UpSkilling Platform** é uma API RESTful desenvolvida para gerenciar uma plataforma de qualificação e requalificação profissional. O sistema permite:
 
 - 👤 **Gestão de Usuários**: Cadastro completo com perfil profissional
 - 📚 **Trilhas de Aprendizagem**: Cursos estruturados por nível (Iniciante, Intermediário, Avançado)
 - 🎯 **Competências**: Mapeamento de habilidades técnicas, humanas e de gestão
-- 📝 **Matrículas**: Inscrição de usuários em trilhas de desenvolvimento
+- 📝 **Matrículas**: Inscrição e gestão de alunos em trilhas de desenvolvimento
 
-### 🎯 Objetivo
+### 🎯 Funcionalidades Principais
 
-Preparar profissionais para os desafios da próxima década através de uma plataforma robusta, escalável e de fácil integração com outros sistemas.
+- ✅ **CRUD completo** de Usuários, Trilhas e Matrículas
+- ✅ **Sistema de inscrição** com validações de regras de negócio
+- ✅ **Controle de status** de matrículas (Ativa, Concluída, Cancelada)
+- ✅ **Consultas específicas** por usuário e por trilha
+- ✅ **Arquitetura Clean** com separação de responsabilidades
+- ✅ **Testes unitários** com 100% de cobertura das regras de negócio
+- ✅ **Documentação Swagger** interativa
+- ✅ **Containerização Docker** para fácil deploy
 
 ---
 
@@ -55,6 +62,8 @@ Preparar profissionais para os desafios da próxima década através de uma plat
 ### **Documentação & Testes**
 - **[Swagger/OpenAPI](https://swagger.io/)** - Documentação interativa da API
 - **[Swashbuckle](https://github.com/domaindrivendev/Swashbuckle.AspNetCore)** - Geração automática de documentação Swagger
+- **[MSTest](https://docs.microsoft.com/en-us/dotnet/core/testing/unit-testing-with-mstest)** - Framework de testes unitários
+- **[Moq](https://github.com/moq/moq4)** - Biblioteca de mocking para testes
 
 ### **Padrões e Práticas**
 - **Clean Architecture** - Arquitetura em camadas com separação de responsabilidades
@@ -455,7 +464,7 @@ start http://localhost:5000/swagger
 
 #### **Opção 2: Executar Testes Unitários**
 
-O projeto inclui 23 testes unitários com MSTest e Moq:
+O projeto inclui **39 testes unitários** com MSTest e Moq:
 
 ```bash
 # Executar todos os testes
@@ -472,6 +481,9 @@ dotnet test /p:CollectCoverage=true
 **Testes incluídos:**
 - ✅ 11 testes para `UsuarioService` (Create, Read, Update, Delete, validações)
 - ✅ 12 testes para `TrilhaService` (Create, Read, Update, Delete, validações de nível)
+- ✅ 16 testes para `MatriculaService` (Create, Read, cancelamento, conclusão, validações)
+
+**Total: 39 testes com 100% de sucesso!**
 
 #### **Opção 3: Usar cURL**
 
@@ -524,13 +536,15 @@ dotnet test --logger "console;verbosity=detailed"
 # Executar testes específicos
 dotnet test --filter "FullyQualifiedName~UsuarioServiceTests"
 dotnet test --filter "FullyQualifiedName~TrilhaServiceTests"
+dotnet test --filter "FullyQualifiedName~MatriculaServiceTests"
 ```
 
 **Cobertura de Testes:**
-- ✅ 23 testes unitários
+- ✅ **39 testes unitários** (11 Usuário + 12 Trilha + 16 Matrícula)
 - ✅ 100% de cobertura dos Services
 - ✅ Testes de cenários de sucesso e erro
 - ✅ Validação de exceções customizadas
+- ✅ Validação completa das regras de negócio
 
 ---
 
@@ -605,6 +619,62 @@ Content-Type: application/json
 - `INICIANTE`
 - `INTERMEDIARIO`
 - `AVANCADO`
+
+---
+
+### 📝 Matrículas (`/api/matriculas`)
+
+| Método | Endpoint | Descrição | Status Codes |
+|--------|----------|-----------|--------------|
+| `GET` | `/api/matriculas` | Lista todas as matrículas | 200 |
+| `GET` | `/api/matriculas/{id}` | Busca matrícula por ID | 200, 404 |
+| `GET` | `/api/matriculas/usuario/{usuarioId}` | Lista matrículas do usuário | 200, 404 |
+| `GET` | `/api/matriculas/trilha/{trilhaId}` | Lista matrículas da trilha | 200, 404 |
+| `POST` | `/api/matriculas` | Cria nova matrícula (inscrição) | 201, 400, 404, 409 |
+| `PATCH` | `/api/matriculas/{id}/cancelar` | Cancela matrícula | 200, 404, 422 |
+| `PATCH` | `/api/matriculas/{id}/concluir` | Conclui matrícula | 200, 404, 422 |
+| `DELETE` | `/api/matriculas/{id}` | Remove matrícula | 204, 404 |
+
+#### **Exemplo: Criar Matrícula (Inscrever Aluno)**
+
+**Request:**
+```json
+POST /api/matriculas
+Content-Type: application/json
+
+{
+  "usuarioId": 1,
+  "trilhaId": 1
+}
+```
+
+**Response (201 Created):**
+```json
+{
+  "id": 1,
+  "usuarioId": 1,
+  "nomeUsuario": "João Silva",
+  "emailUsuario": "joao.silva@email.com",
+  "trilhaId": 1,
+  "nomeTrilha": "DevOps Essencial",
+  "nivelTrilha": "Intermediário",
+  "cargaHoraria": 60,
+  "dataInscricao": "2025-11-15T18:30:00",
+  "status": "Ativa"
+}
+```
+
+#### **Status de Matrícula:**
+- `Ativa` - Matrícula em andamento
+- `Concluída` - Trilha finalizada com sucesso
+- `Cancelada` - Matrícula cancelada
+
+#### **Regras de Negócio:**
+- ✅ Usuário deve existir
+- ✅ Trilha deve existir
+- ✅ Usuário não pode ter matrícula ativa duplicada na mesma trilha
+- ✅ Não pode cancelar matrícula já cancelada ou concluída
+- ✅ Não pode concluir matrícula cancelada
 
 ---
 
@@ -1017,51 +1087,30 @@ docker-compose version
 
 ## 👥 Equipe
 
-Este projeto foi desenvolvido como parte da disciplina de **Arquitetura de Software Orientada a Serviços (SOA)** na FIAP.
+### Integrantes
 
-**Instituição:** FIAP - Faculdade de Informática e Administração Paulista  
-**Curso:** Engenharia de Software / Sistemas para Internet  
-**Turma:** 3ESPY  
-**Ano:** 2025
-
-Para mais informações sobre a equipe, consulte [TEAM.md](TEAM.md).
+| Nome | RM |
+|------|------|
+| **Felipe Heilmann Marques** | RM551026 |
+| **Ian Cancian Nachtergaele** | RM98387 |
+| **Carlos Eduardo Caramante Ribeiro** | RM552159 |
 
 ---
 
 ## 📚 Documentação Adicional
 
-- 📖 [QUICKSTART.md](QUICKSTART.md) - Guia rápido de início
-- 🏗️ [ARCHITECTURE.md](ARCHITECTURE.md) - Detalhes da arquitetura
-- 👥 [TEAM.md](TEAM.md) - Informações da equipe
-- 🧪 [tests/api-requests.http](tests/api-requests.http) - 27 exemplos de requisições
-
----
-
-## 📄 Licença
-
-Este projeto é acadêmico e desenvolvido para fins educacionais na FIAP.
-
----
-
-## 🙏 Agradecimentos
-
-- Professores da FIAP pelo suporte e orientação
-- Comunidade .NET pela excelente documentação
-- Todos os contribuidores do projeto
-
----
-
-## 📞 Suporte
-
-Para dúvidas ou problemas:
-- 📧 Email: contato@fiap.com.br
-- 🐛 Issues: [GitHub Issues](https://github.com/seu-usuario/upskilling-platform/issues)
+- 📖 [README-DOCKER.md](README-DOCKER.md) - Guia completo de Docker
+- 🐳 [DOCKERIZACAO.md](DOCKERIZACAO.md) - Resumo da dockerização
+- � [GUIA-MIGRATIONS.md](GUIA-MIGRATIONS.md) - Guia de Entity Framework Migrations
+- 📝 [FUNCIONALIDADE-MATRICULA.md](FUNCIONALIDADE-MATRICULA.md) - Documentação da funcionalidade de matrículas
+- 💡 [EXEMPLOS-API-MATRICULA.md](EXEMPLOS-API-MATRICULA.md) - Exemplos práticos de uso da API
+- �️ [INDICE-DOCUMENTACAO.md](INDICE-DOCUMENTACAO.md) - Índice completo da documentação
 
 ---
 
 <div align="center">
 
-**⭐ Desenvolvido com ❤️ para o Futuro do Trabalho 2030+ ⭐**
+**⭐ Desenvolvido para o Futuro do Trabalho 2030+ ⭐**
 
 Made with [.NET](https://dotnet.microsoft.com/) • [MySQL](https://www.mysql.com/) • [Docker](https://www.docker.com/)
 
