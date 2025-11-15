@@ -5,7 +5,7 @@ using UpSkillingPlatform.Application.Services;
 namespace UpSkillingPlatform.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/usuarios")]
 public class UsuariosController : ControllerBase
 {
     private readonly UsuarioService _service;

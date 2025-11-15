@@ -5,7 +5,7 @@ using UpSkillingPlatform.Application.Services;
 namespace UpSkillingPlatform.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/trilhas")]
 public class TrilhasController : ControllerBase
 {
     private readonly TrilhaService _service;

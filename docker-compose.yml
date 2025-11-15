@@ -26,6 +26,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=docker
       - ASPNETCORE_URLS=http://+:5000
+      - ConnectionStrings__DefaultConnection=Server=mysql;Port=3306;Database=upskilling_db;User=upskilling_user;Password=upskilling_pass;
     ports:
       - "5000:5000"
     depends_on:

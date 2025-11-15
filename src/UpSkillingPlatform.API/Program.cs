@@ -17,25 +17,15 @@ builder.Services.AddSwaggerGen(c =>
         Title = "UpSkilling Platform API",
         Version = "v1",
         Description = "API RESTful para plataforma de Upskilling/Reskilling - Futuro do Trabalho 2030+",
-        Contact = new Microsoft.OpenApi.Models.OpenApiContact
-        {
-            Name = "FIAP - 3ESPY",
-            Email = "contato@fiap.com.br"
-        }
     });
 });
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
-
-app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
@@ -44,14 +34,31 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    try
+    var maxRetries = 10;
+    var delay = TimeSpan.FromSeconds(3);
+    
+    for (int i = 0; i < maxRetries; i++)
     {
-        dbContext.Database.Migrate();
-        Console.WriteLine("✅ Database migrated successfully!");
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"❌ Error migrating database: {ex.Message}");
+        try
+        {
+            Console.WriteLine($"🔄 Attempting to connect to database... (Attempt {i + 1}/{maxRetries})");
+            dbContext.Database.Migrate();
+            Console.WriteLine("✅ Database migrated successfully!");
+            break;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Error connecting to database: {ex.Message}");
+            
+            if (i == maxRetries - 1)
+            {
+                Console.WriteLine("❌ Failed to connect to database after maximum retries.");
+                throw;
+            }
+            
+            Console.WriteLine($"⏳ Waiting {delay.TotalSeconds} seconds before retry...");
+            await Task.Delay(delay);
+        }
     }
 }
 
