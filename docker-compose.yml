@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   mysql:
     image: mysql:8.0
@@ -19,6 +17,23 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 20s
       retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: src/UpSkillingPlatform.API/Dockerfile
+    container_name: upskilling_api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - ASPNETCORE_URLS=http://+:5000
+    ports:
+      - "5000:5000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - upskilling_network
+    restart: on-failure
 
 volumes:
   mysql_data:

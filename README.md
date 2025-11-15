@@ -228,7 +228,34 @@ O projeto segue os princípios de **Clean Architecture** (Arquitetura Limpa) pro
 
 ## 🚀 Como Rodar o Projeto
 
-### 📋 Pré-requisitos
+### � **OPÇÃO 1: Com Docker (Recomendado)** ⭐
+
+A forma mais rápida e fácil! Apenas **um comando** e tudo está funcionando.
+
+```bash
+# Clone o repositório
+git clone <url-do-repositorio>
+cd gs
+
+# Suba toda a aplicação (API + MySQL)
+docker compose up -d
+
+# Aguarde ~30 segundos e acesse:
+# 🌐 Swagger: http://localhost:5000/swagger
+# 📊 API: http://localhost:5000/api/
+```
+
+**Pronto! A aplicação está rodando! 🎉**
+
+Para mais detalhes sobre Docker, veja: **[📖 README-DOCKER.md](README-DOCKER.md)**
+
+---
+
+### 💻 **OPÇÃO 2: Desenvolvimento Local** 
+
+Para rodar sem Docker ou fazer desenvolvimento ativo:
+
+### �📋 Pré-requisitos
 
 Antes de começar, certifique-se de ter instalado:
 
