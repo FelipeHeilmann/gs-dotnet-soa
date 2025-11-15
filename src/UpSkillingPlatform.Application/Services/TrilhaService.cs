@@ -5,7 +5,7 @@ using UpSkillingPlatform.Domain.Interfaces;
 
 namespace UpSkillingPlatform.Application.Services;
 
-public class TrilhaService : ITrilhaService
+public class TrilhaService
 {
     private readonly ITrilhaRepository _repository;
 

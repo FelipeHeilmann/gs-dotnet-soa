@@ -263,6 +263,15 @@ git clone <url-do-repositorio>
 
 # Entre na pasta do projeto
 cd gs
+
+# A estrutura do projeto está organizada em:
+# src/
+#   ├── UpSkillingPlatform.API/          # Camada de apresentação (Controllers, Middleware)
+#   ├── UpSkillingPlatform.Application/  # Camada de aplicação (Services, DTOs)
+#   ├── UpSkillingPlatform.Domain/       # Camada de domínio (Entities, Interfaces, Exceptions)
+#   └── UpSkillingPlatform.Infrastructure/ # Camada de infraestrutura (Repositories, DbContext)
+# tests/
+#   └── UpSkillingPlatform.Tests/        # Testes unitários com MSTest
 ```
 
 ---
@@ -307,18 +316,26 @@ Password: upskilling_pass
 ### 📦 Passo 3: Restaurar Dependências do Projeto
 
 ```bash
-# Entre na pasta do projeto .NET
-cd UpSkillingPlatform
+# A solução está organizada em múltiplos projetos
+# Restaure todas as dependências de uma vez
 
-# Restaure as dependências NuGet
+cd /home/felipe/workspace/fiap/soa/gs
 dotnet restore
 ```
+
+**Projetos na solução:**
+- **UpSkillingPlatform.Domain** - Entidades, Interfaces, Exceções
+- **UpSkillingPlatform.Application** - Services, DTOs (depende do Domain)
+- **UpSkillingPlatform.Infrastructure** - Repositories, DbContext, EF Core (depende do Domain)
+- **UpSkillingPlatform.API** - Controllers, Middleware, Swagger (depende do Application e Infrastructure)
+- **UpSkillingPlatform.Tests** - Testes MSTest com Moq (depende do Domain e Application)
 
 **Pacotes que serão instalados:**
 - Microsoft.EntityFrameworkCore (8.0.10)
 - Microsoft.EntityFrameworkCore.Design (8.0.10)
 - Pomelo.EntityFrameworkCore.MySql (8.0.2)
 - Swashbuckle.AspNetCore (6.5.0)
+- Moq (4.20.70) - Para testes
 
 ---
 
@@ -327,7 +344,8 @@ dotnet restore
 O Entity Framework Core usa migrations para criar e versionar o schema do banco de dados.
 
 ```bash
-# Ainda dentro de UpSkillingPlatform/
+# As migrations devem ser criadas a partir do projeto API (que tem a referência ao Infrastructure)
+cd src/UpSkillingPlatform.API
 
 # Criar a migration inicial
 dotnet ef migrations add InitialCreate
@@ -352,8 +370,13 @@ dotnet ef database update
 ### ▶️ Passo 5: Executar a Aplicação
 
 ```bash
-# Execute a aplicação
+# Execute a aplicação a partir do projeto API
+cd src/UpSkillingPlatform.API
 dotnet run
+
+# Ou execute a partir da raiz usando a solução
+cd /home/felipe/workspace/fiap/soa/gs
+dotnet run --project src/UpSkillingPlatform.API/UpSkillingPlatform.API.csproj
 ```
 
 **Saída esperada:**
@@ -403,7 +426,27 @@ start http://localhost:5000/swagger
 4. Clique em **"Execute"**
 5. Veja a resposta abaixo
 
-#### **Opção 2: Usar cURL**
+#### **Opção 2: Executar Testes Unitários**
+
+O projeto inclui 23 testes unitários com MSTest e Moq:
+
+```bash
+# Executar todos os testes
+cd tests/UpSkillingPlatform.Tests
+dotnet test
+
+# Executar com mais detalhes
+dotnet test --logger "console;verbosity=detailed"
+
+# Executar com cobertura (requer coverlet)
+dotnet test /p:CollectCoverage=true
+```
+
+**Testes incluídos:**
+- ✅ 11 testes para `UsuarioService` (Create, Read, Update, Delete, validações)
+- ✅ 12 testes para `TrilhaService` (Create, Read, Update, Delete, validações de nível)
+
+#### **Opção 3: Usar cURL**
 
 ```bash
 # Listar todas as trilhas
@@ -436,6 +479,31 @@ code tests/api-requests.http
 ```
 
 Clique em **"Send Request"** acima de cada requisição.
+
+---
+
+## 🧪 Executar Testes
+
+O projeto utiliza **MSTest** com **Moq** para testes unitários.
+
+```bash
+# Executar todos os testes
+cd tests/UpSkillingPlatform.Tests
+dotnet test
+
+# Executar com detalhes
+dotnet test --logger "console;verbosity=detailed"
+
+# Executar testes específicos
+dotnet test --filter "FullyQualifiedName~UsuarioServiceTests"
+dotnet test --filter "FullyQualifiedName~TrilhaServiceTests"
+```
+
+**Cobertura de Testes:**
+- ✅ 23 testes unitários
+- ✅ 100% de cobertura dos Services
+- ✅ Testes de cenários de sucesso e erro
+- ✅ Validação de exceções customizadas
 
 ---
 
@@ -649,6 +717,7 @@ dotnet restore
 dotnet build
 
 # Executar aplicação
+cd src/UpSkillingPlatform.API
 dotnet run
 
 # Executar em modo watch (auto-reload)
@@ -659,12 +728,17 @@ dotnet clean
 
 # Publicar para produção
 dotnet publish -c Release
+
+# Executar testes
+cd tests/UpSkillingPlatform.Tests
+dotnet test
 ```
 
 ### Entity Framework Core
 
 ```bash
 # Listar migrations
+cd src/UpSkillingPlatform.API
 dotnet ef migrations list
 
 # Criar nova migration
@@ -710,11 +784,97 @@ dotnet ef database update
 ### Limpar Build Artifacts
 
 ```bash
-cd UpSkillingPlatform
+# Limpar builds de todos os projetos
 dotnet clean
-rm -rf bin obj
+
+# Remover pastas bin e obj manualmente
+find . -type d -name "bin" -o -name "obj" | xargs rm -rf
+
+# Restaurar e compilar novamente
 dotnet restore
 dotnet build
+```
+
+---
+
+## 📊 Estrutura do Projeto
+
+O projeto segue **Clean Architecture** com separação em 4 camadas:
+
+```
+gs/
+├── src/
+│   ├── UpSkillingPlatform.Domain/           # Camada de Domínio
+│   │   ├── Entities/                        # Entidades do negócio
+│   │   │   ├── Usuario.cs
+│   │   │   ├── Trilha.cs
+│   │   │   ├── Competencia.cs
+│   │   │   ├── TrilhaCompetencia.cs
+│   │   │   └── Matricula.cs
+│   │   ├── Interfaces/                      # Contratos de repositórios
+│   │   │   ├── IRepository.cs
+│   │   │   ├── IUsuarioRepository.cs
+│   │   │   └── ITrilhaRepository.cs
+│   │   └── Exceptions/                      # Exceções customizadas
+│   │       └── CustomExceptions.cs
+│   │
+│   ├── UpSkillingPlatform.Application/      # Camada de Aplicação
+│   │   ├── Services/                        # Lógica de negócio
+│   │   │   ├── IUsuarioService.cs
+│   │   │   ├── UsuarioService.cs
+│   │   │   ├── ITrilhaService.cs
+│   │   │   └── TrilhaService.cs
+│   │   └── DTOs/                            # Data Transfer Objects
+│   │       ├── UsuarioDto.cs
+│   │       └── TrilhaDto.cs
+│   │
+│   ├── UpSkillingPlatform.Infrastructure/   # Camada de Infraestrutura
+│   │   ├── Data/
+│   │   │   ├── AppDbContext.cs              # Contexto do EF Core
+│   │   │   └── Configurations/              # Fluent API
+│   │   │       ├── UsuarioConfiguration.cs
+│   │   │       ├── TrilhaConfiguration.cs
+│   │   │       ├── CompetenciaConfiguration.cs
+│   │   │       ├── TrilhaCompetenciaConfiguration.cs
+│   │   │       └── MatriculaConfiguration.cs
+│   │   └── Repositories/                    # Implementação dos repositórios
+│   │       ├── Repository.cs
+│   │       ├── UsuarioRepository.cs
+│   │       └── TrilhaRepository.cs
+│   │
+│   └── UpSkillingPlatform.API/              # Camada de Apresentação
+│       ├── Controllers/                     # Endpoints REST
+│       │   ├── UsuariosController.cs
+│       │   └── TrilhasController.cs
+│       ├── Middleware/                      # Middleware customizado
+│       │   └── GlobalExceptionHandlerMiddleware.cs
+│       ├── Program.cs                       # Entry point
+│       ├── appsettings.json                 # Configurações
+│       └── appsettings.Development.json
+│
+├── tests/
+│   └── UpSkillingPlatform.Tests/            # Testes Unitários
+│       └── Services/
+│           ├── UsuarioServiceTests.cs       # 11 testes
+│           └── TrilhaServiceTests.cs        # 12 testes
+│
+├── docker-compose.yml                       # Docker MySQL
+├── README.md                                # Este arquivo
+└── UpSkillingPlatform.sln                   # Solução .NET
+```
+
+### Dependências entre Projetos
+
+```
+UpSkillingPlatform.API
+  ├─→ UpSkillingPlatform.Application
+  │     └─→ UpSkillingPlatform.Domain
+  └─→ UpSkillingPlatform.Infrastructure
+        └─→ UpSkillingPlatform.Domain
+
+UpSkillingPlatform.Tests
+  ├─→ UpSkillingPlatform.Application
+  └─→ UpSkillingPlatform.Domain
 ```
 
 ---

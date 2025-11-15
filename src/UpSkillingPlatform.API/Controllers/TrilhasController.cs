@@ -8,10 +8,10 @@ namespace UpSkillingPlatform.API.Controllers;
 [Route("api/[controller]")]
 public class TrilhasController : ControllerBase
 {
-    private readonly ITrilhaService _service;
+    private readonly TrilhaService _service;
     private readonly ILogger<TrilhasController> _logger;
 
-    public TrilhasController(ITrilhaService service, ILogger<TrilhasController> logger)
+    public TrilhasController(TrilhaService service, ILogger<TrilhasController> logger)
     {
         _service = service;
         _logger = logger;

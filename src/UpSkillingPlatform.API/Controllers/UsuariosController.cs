@@ -8,10 +8,10 @@ namespace UpSkillingPlatform.API.Controllers;
 [Route("api/[controller]")]
 public class UsuariosController : ControllerBase
 {
-    private readonly IUsuarioService _service;
+    private readonly UsuarioService _service;
     private readonly ILogger<UsuariosController> _logger;
 
-    public UsuariosController(IUsuarioService service, ILogger<UsuariosController> logger)
+    public UsuariosController(UsuarioService service, ILogger<UsuariosController> logger)
     {
         _service = service;
         _logger = logger;

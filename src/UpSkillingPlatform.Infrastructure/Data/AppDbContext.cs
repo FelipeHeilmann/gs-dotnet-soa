@@ -20,20 +20,17 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // Aplicar todas as configurações do Fluent API
         modelBuilder.ApplyConfiguration(new UsuarioConfiguration());
         modelBuilder.ApplyConfiguration(new TrilhaConfiguration());
         modelBuilder.ApplyConfiguration(new CompetenciaConfiguration());
         modelBuilder.ApplyConfiguration(new TrilhaCompetenciaConfiguration());
         modelBuilder.ApplyConfiguration(new MatriculaConfiguration());
 
-        // Seed Data
         SeedData(modelBuilder);
     }
 
     private void SeedData(ModelBuilder modelBuilder)
     {
-        // Seed Competencias
         modelBuilder.Entity<Competencia>().HasData(
             new Competencia { Id = 1, Nome = "Inteligência Artificial", Categoria = "Tecnologia", Descricao = "Machine Learning, Deep Learning, NLP" },
             new Competencia { Id = 2, Nome = "Análise de Dados", Categoria = "Tecnologia", Descricao = "Data Science, Business Intelligence, Big Data" },
@@ -45,7 +42,6 @@ public class AppDbContext : DbContext
             new Competencia { Id = 8, Nome = "Gestão de Projetos", Categoria = "Gestão", Descricao = "Metodologias ágeis e tradicionais" }
         );
 
-        // Seed Trilhas
         modelBuilder.Entity<Trilha>().HasData(
             new Trilha 
             { 
@@ -85,7 +81,6 @@ public class AppDbContext : DbContext
             }
         );
 
-        // Seed TrilhaCompetencia
         modelBuilder.Entity<TrilhaCompetencia>().HasData(
             new TrilhaCompetencia { TrilhaId = 1, CompetenciaId = 1 },
             new TrilhaCompetencia { TrilhaId = 1, CompetenciaId = 7 },

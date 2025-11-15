@@ -5,7 +5,7 @@ using UpSkillingPlatform.Domain.Interfaces;
 
 namespace UpSkillingPlatform.Application.Services;
 
-public class UsuarioService : IUsuarioService
+public class UsuarioService
 {
     private readonly IUsuarioRepository _repository;
 
@@ -32,7 +32,6 @@ public class UsuarioService : IUsuarioService
 
     public async Task<UsuarioResponseDto> CreateAsync(UsuarioCreateDto dto)
     {
-        // Validar se email já existe
         if (await _repository.EmailExistsAsync(dto.Email))
         {
             throw new EmailJaCadastradoException(dto.Email);
@@ -59,7 +58,6 @@ public class UsuarioService : IUsuarioService
             throw new UsuarioNaoEncontradoException(id);
         }
 
-        // Validar se email já existe em outro usuário
         var existingUser = await _repository.GetByEmailAsync(dto.Email);
         if (existingUser != null && existingUser.Id != id)
         {
