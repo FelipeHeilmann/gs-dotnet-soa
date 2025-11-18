@@ -1097,17 +1097,6 @@ docker-compose version
 
 ---
 
-## 📚 Documentação Adicional
-
-- 📖 [README-DOCKER.md](README-DOCKER.md) - Guia completo de Docker
-- 🐳 [DOCKERIZACAO.md](DOCKERIZACAO.md) - Resumo da dockerização
-- � [GUIA-MIGRATIONS.md](GUIA-MIGRATIONS.md) - Guia de Entity Framework Migrations
-- 📝 [FUNCIONALIDADE-MATRICULA.md](FUNCIONALIDADE-MATRICULA.md) - Documentação da funcionalidade de matrículas
-- 💡 [EXEMPLOS-API-MATRICULA.md](EXEMPLOS-API-MATRICULA.md) - Exemplos práticos de uso da API
-- �️ [INDICE-DOCUMENTACAO.md](INDICE-DOCUMENTACAO.md) - Índice completo da documentação
-
----
-
 <div align="center">
 
 **⭐ Desenvolvido para o Futuro do Trabalho 2030+ ⭐**
